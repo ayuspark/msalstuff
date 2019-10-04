@@ -1,21 +1,30 @@
 import './App.css';
 
-import MSAL from 'msal';
+import { UserAgentApplication } from 'msal';
 import React from 'react';
 
 import logo from './logo.svg';
 
-onSignInClick = () =>
+function redirectCallback(error)
 {
-  alert('hey');
+  if (error)
+  {
+    console.log(error);
+  }
+}
+
+function onSignInClick()
+{
+  alert('going to the login page yo');
   const config =
   {
     auth:
     {
       clientId: 'bf04bdab-e06f-44f3-9821-d3af64fc93a9',
       authority: `https://login.microsoftonline.com/common`,
-      redirectUri: 'https:raas.local',
-      postLogoutRedirectUri: window.location.origin,
+      redirectUri: 'https://raas.local',
+      postLogoutRedirectUri: 'https://raas.local',
+      navigateToLoginRequestUrl: false
     },
     cache:
     {
@@ -26,8 +35,13 @@ onSignInClick = () =>
       loadFrameTimeout: 30000
     }
   };
-  const msal = new MSAL.UserAgentApplication(config);
-  msal.loginRedirect()
+  const msal = new UserAgentApplication(config);
+  const authRequest = {
+    scopes: [ config.auth.clientId ],
+    state: 'hahaha'
+  };
+  msal.handleRedirectCallback(redirectCallback)
+  msal.loginRedirect(authRequest);
 }
 
 function App() {
